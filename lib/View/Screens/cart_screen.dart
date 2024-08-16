@@ -41,9 +41,9 @@ class _CartPageState extends ConsumerState<CartPage> {
       for (int i = _selectedItems.length - 1; i >= 0; i--) {
         if (_selectedItems[i]) {
           cart.removeFromCart(i);
-          _selectedItems.removeAt(i);
         }
       }
+      _selectedItems = List<bool>.filled(cart.cartList.length, false);
       _selectAll = false;
     });
   }

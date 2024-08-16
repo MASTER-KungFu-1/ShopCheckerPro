@@ -188,7 +188,9 @@ class Cart extends ChangeNotifier {
 
   void removeFromCart(int index) {
     final product = cartList[index];
+
     totalPrice -= double.parse(product['price']);
+    if (totalPrice < 0) totalPrice = 0;
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
       totalDiscount -=
           double.parse(product['oldPrice']) - double.parse(product['price']);

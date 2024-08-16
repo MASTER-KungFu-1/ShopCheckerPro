@@ -62,89 +62,88 @@ class _ShopState extends ConsumerState<Shop> {
           'oldPrice': product.oldPrice,
           'imageUrl': product.imageUrl
         };
-        return GestureDetector(
-          onTap: () => viewModel.handleTapOutside(
-            context,
-          ),
-          child: InkWell(
-            onTap: () => ref.read(cartModelProvider).addToCart(productMap),
-            child: Card(
-              color: Theme.of(context).colorScheme.primary,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(
-                    height:
-                        MediaQuery.of(context).size.height / itemHeightFactor,
-                    child: Image.network(
-                      product.imageUrl,
-                      fit: BoxFit.cover,
-                      loadingBuilder: (BuildContext context, Widget child,
-                          ImageChunkEvent? loadingProgress) {
-                        if (loadingProgress == null) {
-                          return child;
-                        } else {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              color: Theme.of(context).colorScheme.secondary,
-                              value: loadingProgress.expectedTotalBytes != null
-                                  ? loadingProgress.cumulativeBytesLoaded /
-                                      (loadingProgress.expectedTotalBytes!)
-                                  : null,
-                            ),
-                          );
-                        }
-                      },
-                      errorBuilder: (BuildContext context, Object error,
-                          StackTrace? stackTrace) {
-                        return const Center(child: Icon(Icons.error));
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.name,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        if (product.hasDiscount)
-                          Text(
-                            'Старая цена: ${product.oldPrice}',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Theme.of(context).colorScheme.error,
-                              decoration: TextDecoration.lineThrough,
-                              decorationColor:
-                                  Theme.of(context).colorScheme.onPrimary,
-                            ),
-                          ),
-                        Text(
-                          'Цена: ${product.price} руб.',
-                          style: TextStyle(
-                            fontSize: 12,
+        return InkWell(
+          onTap: () {
+            ref.read(cartModelProvider).addToCart(productMap);
+            viewModel.handleTapOutside(
+              context,
+            );
+          },
+          child: Card(
+            color: Theme.of(context).colorScheme.primary,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SizedBox(
+                  height: MediaQuery.of(context).size.height / itemHeightFactor,
+                  child: Image.network(
+                    product.imageUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (BuildContext context, Widget child,
+                        ImageChunkEvent? loadingProgress) {
+                      if (loadingProgress == null) {
+                        return child;
+                      } else {
+                        return Center(
+                          child: CircularProgressIndicator(
                             color: Theme.of(context).colorScheme.secondary,
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    (loadingProgress.expectedTotalBytes!)
+                                : null,
                           ),
-                        ),
-                        Text(
-                          'Магазин: ${product.storeName}',
-                          style: TextStyle(
-                            fontSize: 15,
-                            color: Theme.of(context).colorScheme.onPrimary,
-                          ),
-                        ),
-                      ],
-                    ),
+                        );
+                      }
+                    },
+                    errorBuilder: (BuildContext context, Object error,
+                        StackTrace? stackTrace) {
+                      return const Center(child: Icon(Icons.error));
+                    },
                   ),
-                ],
-              ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        product.name,
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (product.hasDiscount)
+                        Text(
+                          'Старая цена: ${product.oldPrice}',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.error,
+                            decoration: TextDecoration.lineThrough,
+                            decorationColor:
+                                Theme.of(context).colorScheme.onPrimary,
+                          ),
+                        ),
+                      Text(
+                        'Цена: ${product.price} руб.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                      ),
+                      Text(
+                        'Магазин: ${product.storeName}',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         );
