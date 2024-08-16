@@ -40,7 +40,7 @@ class Product {
       storeName: json['store_name'],
       imageUrl: json['image_url'],
       price: json['price'] ?? "Акция",
-      oldPrice: json['oldprice'] ?? "Нет",
+      oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
     );
@@ -65,9 +65,9 @@ class Product {
       storeName: 'magnit',
       imageUrl: json['imageUrl'],
       price: json['price'].toString(),
-      oldPrice: null,
-      hasDiscount: false,
-      discountPercent: null,
+      oldPrice: json['oldPrice'],
+      hasDiscount: json['discount'] ?? false,
+      discountPercent: json['discountPercent'],
     );
   }
 
@@ -91,9 +91,9 @@ class Product {
       storeName: json['store_name'],
       imageUrl: json['image_url'] ?? json['imageUrl'],
       price: json['price'].toString(),
-      oldPrice: json['oldprice'] ?? "Нет",
+      oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
-      discountPercent: json['discountPercent'] ?? "Нет",
+      discountPercent: json['discountPercent'],
     );
   }
 }
@@ -171,9 +171,10 @@ class Cart extends ChangeNotifier {
 
   void addToCart(Map<String, dynamic> mapList) {
     cartList.add(mapList);
-    totalPrice += mapList['price'];
-    if (mapList.containsKey('oldPrice')) {
-      totalDiscount += mapList['oldPrice'] - mapList['price'];
+    totalPrice += double.parse(mapList['price']);
+    if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
+      totalDiscount +=
+          double.parse(mapList['oldPrice']) - double.parse(mapList['price']);
     }
     notifyListeners();
   }
@@ -187,9 +188,10 @@ class Cart extends ChangeNotifier {
 
   void removeFromCart(int index) {
     final product = cartList[index];
-    totalPrice -= product['price'];
-    if (product.containsKey('oldPrice')) {
-      totalDiscount -= product['oldPrice'] - product['price'];
+    totalPrice -= double.parse(product['price']);
+    if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
+      totalDiscount -=
+          double.parse(product['oldPrice']) - double.parse(product['price']);
     }
     cartList.removeAt(index);
     notifyListeners();

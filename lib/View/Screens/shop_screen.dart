@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shopcheckerpro/Model/Product.dart';
 import 'package:shopcheckerpro/ViewModel/Products_ViewModel.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -22,6 +23,8 @@ class _ShopState extends ConsumerState<Shop> {
       ref
           .read(shopViewModelProvider)
           .loadProducts(_searchController.text, context);
+
+      ref.read(cartModelProvider);
     });
   }
 
@@ -53,86 +56,95 @@ class _ShopState extends ConsumerState<Shop> {
       itemCount: viewModel.products.length,
       itemBuilder: (BuildContext context, int index) {
         final product = viewModel.products[index];
-
+        final productMap = {
+          'name': product.name,
+          'price': product.price,
+          'oldPrice': product.oldPrice,
+          'imageUrl': product.imageUrl
+        };
         return GestureDetector(
           onTap: () => viewModel.handleTapOutside(
             context,
           ),
-          child: Card(
-            color: Theme.of(context).colorScheme.primary,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(
-                  height: MediaQuery.of(context).size.height / itemHeightFactor,
-                  child: Image.network(
-                    product.imageUrl,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (BuildContext context, Widget child,
-                        ImageChunkEvent? loadingProgress) {
-                      if (loadingProgress == null) {
-                        return child;
-                      } else {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.secondary,
-                            value: loadingProgress.expectedTotalBytes != null
-                                ? loadingProgress.cumulativeBytesLoaded /
-                                    (loadingProgress.expectedTotalBytes!)
-                                : null,
-                          ),
-                        );
-                      }
-                    },
-                    errorBuilder: (BuildContext context, Object error,
-                        StackTrace? stackTrace) {
-                      return const Center(child: Icon(Icons.error));
-                    },
+          child: InkWell(
+            onTap: () => ref.read(cartModelProvider).addToCart(productMap),
+            child: Card(
+              color: Theme.of(context).colorScheme.primary,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  SizedBox(
+                    height:
+                        MediaQuery.of(context).size.height / itemHeightFactor,
+                    child: Image.network(
+                      product.imageUrl,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent? loadingProgress) {
+                        if (loadingProgress == null) {
+                          return child;
+                        } else {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.secondary,
+                              value: loadingProgress.expectedTotalBytes != null
+                                  ? loadingProgress.cumulativeBytesLoaded /
+                                      (loadingProgress.expectedTotalBytes!)
+                                  : null,
+                            ),
+                          );
+                        }
+                      },
+                      errorBuilder: (BuildContext context, Object error,
+                          StackTrace? stackTrace) {
+                        return const Center(child: Icon(Icons.error));
+                      },
+                    ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        product.name,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      if (product.hasDiscount)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
                         Text(
-                          'Старая цена: ${product.oldPrice}',
+                          product.name,
                           style: TextStyle(
                             fontSize: 12,
-                            color: Theme.of(context).colorScheme.error,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor:
-                                Theme.of(context).colorScheme.onPrimary,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      Text(
-                        'Цена: ${product.price} руб.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.secondary,
+                        const SizedBox(height: 4),
+                        if (product.hasDiscount)
+                          Text(
+                            'Старая цена: ${product.oldPrice}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).colorScheme.error,
+                              decoration: TextDecoration.lineThrough,
+                              decorationColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                            ),
+                          ),
+                        Text(
+                          'Цена: ${product.price} руб.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.secondary,
+                          ),
                         ),
-                      ),
-                      Text(
-                        'Магазин: ${product.storeName}',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                        Text(
+                          'Магазин: ${product.storeName}',
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         );
