@@ -191,10 +191,12 @@ class Cart extends ChangeNotifier {
 
     totalPrice -= double.parse(product['price']);
     if (totalPrice < 0) totalPrice = 0;
+
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
       totalDiscount -=
           double.parse(product['oldPrice']) - double.parse(product['price']);
     }
+    if (totalDiscount < 0) totalDiscount = 0;
     cartList.removeAt(index);
     notifyListeners();
   }

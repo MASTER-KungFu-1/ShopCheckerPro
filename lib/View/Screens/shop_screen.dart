@@ -69,6 +69,19 @@ class _ShopState extends ConsumerState<Shop> {
               context,
             );
           },
+          onDoubleTap: () {
+            Cart provider = ref.read(cartModelProvider);
+            List<Map<String, dynamic>> cart = provider.checkCart();
+            for (int i = 0; i < cart.length; i++) {
+              if (cart[i]['name'] == product.name &&
+                  cart[i]['price'] == product.price) {
+                provider.removeFromCart(i);
+                viewModel.handleTapOutside(context);
+
+                break;
+              }
+            }
+          },
           child: Card(
             color: Theme.of(context).colorScheme.primary,
             child: Column(

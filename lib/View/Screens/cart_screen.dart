@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shopcheckerpro/Model/Product.dart';
-//import 'package:shopcheckerpro/ViewModel/Products_ViewModel.dart';
 
 class CartPage extends ConsumerStatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -139,93 +138,107 @@ class _CartPageState extends ConsumerState<CartPage> {
               ),
               const SizedBox(height: 16),
               Expanded(
-                child: ListView.builder(
-                  itemCount: totalItems,
-                  itemBuilder: (context, index) {
-                    final product = cart.cartList[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        children: [
-                          Checkbox(
-                            shape: const CircleBorder(),
-                            activeColor:
-                                (Theme.of(context).colorScheme.secondary),
-                            value: _selectedItems[index],
-                            onChanged: (value) => _onItemChanged(index, value),
-                          ),
-                          Image.network(
-                            product['imageUrl'],
-                            fit: BoxFit.cover,
-                            width: 120,
-                            height: 120,
-                            loadingBuilder: (BuildContext context, Widget child,
-                                ImageChunkEvent? loadingProgress) {
-                              if (loadingProgress == null) {
-                                return child;
-                              } else {
-                                return Center(
-                                  child: CircularProgressIndicator(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
-                                    value: loadingProgress.expectedTotalBytes !=
-                                            null
-                                        ? loadingProgress
-                                                .cumulativeBytesLoaded /
-                                            (loadingProgress
-                                                .expectedTotalBytes!)
-                                        : null,
+                  child: totalItems != 0
+                      ? ListView.builder(
+                          itemCount: totalItems,
+                          itemBuilder: (context, index) {
+                            final product = cart.cartList[index];
+                            return Card(
+                              margin: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Row(
+                                children: [
+                                  Checkbox(
+                                    shape: const CircleBorder(),
+                                    activeColor: (Theme.of(context)
+                                        .colorScheme
+                                        .secondary),
+                                    value: _selectedItems[index],
+                                    onChanged: (value) =>
+                                        _onItemChanged(index, value),
                                   ),
-                                );
-                              }
-                            },
-                            errorBuilder: (BuildContext context, Object error,
-                                StackTrace? stackTrace) {
-                              return const Center(child: Icon(Icons.error));
-                            },
-                          ), //Text(product['name']),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                GestureDetector(
-                                  onTap: () =>
-                                      _showFullText(context, product['name']),
-                                  child: Text(
-                                    product['name'],
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
+                                  Image.network(
+                                    product['imageUrl'],
+                                    fit: BoxFit.cover,
+                                    width: 120,
+                                    height: 120,
+                                    loadingBuilder: (BuildContext context,
+                                        Widget child,
+                                        ImageChunkEvent? loadingProgress) {
+                                      if (loadingProgress == null) {
+                                        return child;
+                                      } else {
+                                        return Center(
+                                          child: CircularProgressIndicator(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            value: loadingProgress
+                                                        .expectedTotalBytes !=
+                                                    null
+                                                ? loadingProgress
+                                                        .cumulativeBytesLoaded /
+                                                    (loadingProgress
+                                                        .expectedTotalBytes!)
+                                                : null,
+                                          ),
+                                        );
+                                      }
+                                    },
+                                    errorBuilder: (BuildContext context,
+                                        Object error, StackTrace? stackTrace) {
+                                      return const Center(
+                                          child: Icon(Icons.error));
+                                    },
+                                  ), //Text(product['name']),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => _showFullText(
+                                              context, product['name']),
+                                          child: Text(
+                                            product['name'],
+                                            maxLines: 3,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Цена: ${product['price']} руб.',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Итого: ${product['price']} руб.',
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Цена: ${product['price']} руб.',
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  'Итого: ${product['price']} руб.',
-                                  style: const TextStyle(fontSize: 14),
-                                ),
-                              ],
-                            ),
+                                ],
+                              ),
+                            );
+                          },
+                        )
+                      : const Center(
+                          child: Text(
+                            'Вы еще не добавили ничего в корзину!\nНажмите по товару один раз, чтобы добавить его в корзину.\nДвойное нажатие удаляет товар из корзины.',
+                            textAlign: TextAlign.center,
                           ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
+                        )),
+              const SizedBox(height: 5),
               Card(
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 3.0, horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
