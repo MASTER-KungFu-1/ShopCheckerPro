@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shopcheckerpro/Model/Product.dart';
 import 'package:shopcheckerpro/ViewModel/Products_ViewModel.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 
@@ -22,6 +23,8 @@ class _ShopState extends ConsumerState<Shop> {
       ref
           .read(shopViewModelProvider)
           .loadProducts(_searchController.text, context);
+
+      ref.read(cartModelProvider);
     });
   }
 
@@ -53,11 +56,32 @@ class _ShopState extends ConsumerState<Shop> {
       itemCount: viewModel.products.length,
       itemBuilder: (BuildContext context, int index) {
         final product = viewModel.products[index];
+        final productMap = {
+          'name': product.name,
+          'price': product.price,
+          'oldPrice': product.oldPrice,
+          'imageUrl': product.imageUrl
+        };
+        return InkWell(
+          onTap: () {
+            ref.read(cartModelProvider).addToCart(productMap);
+            viewModel.handleTapOutside(
+              context,
+            );
+          },
+          onDoubleTap: () {
+            Cart provider = ref.read(cartModelProvider);
+            List<Map<String, dynamic>> cart = provider.checkCart();
+            for (int i = 0; i < cart.length; i++) {
+              if (cart[i]['name'] == product.name &&
+                  cart[i]['price'] == product.price) {
+                provider.removeFromCart(i);
+                viewModel.handleTapOutside(context);
 
-        return GestureDetector(
-          onTap: () => viewModel.handleTapOutside(
-            context,
-          ),
+                break;
+              }
+            }
+          },
           child: Card(
             color: Theme.of(context).colorScheme.primary,
             child: Column(
