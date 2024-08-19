@@ -171,10 +171,12 @@ class Cart extends ChangeNotifier {
 
   void addToCart(Map<String, dynamic> mapList) {
     cartList.add(mapList);
-    totalPrice += double.parse(mapList['price']);
+
+    totalPrice += double.parse(mapList['price'].replaceFirst(',', '.'));
     if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
       totalDiscount +=
-          double.parse(mapList['oldPrice']) - double.parse(mapList['price']);
+          double.parse(mapList['oldPrice'].replaceFirst(',', '.')) -
+              double.parse(mapList['price'].replaceFirst(',', '.'));
     }
     notifyListeners();
   }
@@ -189,12 +191,13 @@ class Cart extends ChangeNotifier {
   void removeFromCart(int index) {
     final product = cartList[index];
 
-    totalPrice -= double.parse(product['price']);
+    totalPrice -= double.parse(product['price'].replaceAll(',', '.'));
     if (totalPrice < 0) totalPrice = 0;
 
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
       totalDiscount -=
-          double.parse(product['oldPrice']) - double.parse(product['price']);
+          double.parse(product['oldPrice'].replaceFirst(',', '.')) -
+              double.parse(product['price'].replaceFirst(',', '.'));
     }
     if (totalDiscount < 0) totalDiscount = 0;
     cartList.removeAt(index);

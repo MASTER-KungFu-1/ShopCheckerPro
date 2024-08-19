@@ -158,7 +158,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                   ),
                                   Image.network(
                                     product['imageUrl'],
-                                    fit: BoxFit.cover,
+                                    fit: BoxFit.contain,
                                     width: 120,
                                     height: 120,
                                     loadingBuilder: (BuildContext context,
@@ -215,10 +215,12 @@ class _CartPageState extends ConsumerState<CartPage> {
                                           style: const TextStyle(fontSize: 14),
                                         ),
                                         const SizedBox(height: 4),
-                                        Text(
-                                          'Итого: ${product['price']} руб.',
-                                          style: const TextStyle(fontSize: 14),
-                                        ),
+                                        if (product.containsKey('count'))
+                                          Text(
+                                            'Итого: ${product['price']} руб.',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
                                       ],
                                     ),
                                   ),
