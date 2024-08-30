@@ -211,13 +211,13 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         ),
                                         const SizedBox(height: 4),
                                         Text(
-                                          'Цена: ${product['price']} руб.',
+                                          'Цена: ${product['price'].toString()} руб.',
                                           style: const TextStyle(fontSize: 14),
                                         ),
                                         const SizedBox(height: 4),
                                         if (product.containsKey('count'))
                                           Text(
-                                            'Итого: ${product['price']} руб.',
+                                            'Итого: ${product['price'].toString()} руб.',
                                             style:
                                                 const TextStyle(fontSize: 14),
                                           ),

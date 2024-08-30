@@ -6,8 +6,8 @@ class Product {
   final String name;
   final String storeName;
   final String imageUrl;
-  final String price;
-  final String? oldPrice;
+  final double price;
+  final double? oldPrice;
   final bool hasDiscount;
   final String? discountPercent;
 
@@ -25,11 +25,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['price'] = json["price"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -39,7 +39,7 @@ class Product {
       name: json['name'],
       storeName: json['store_name'],
       imageUrl: json['image_url'],
-      price: json['price'] ?? "Акция",
+      price: json['price'] ?? 0.0,
       oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -50,11 +50,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['price'] = json["price"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -64,7 +64,7 @@ class Product {
       name: json['name'],
       storeName: 'magnit',
       imageUrl: json['imageUrl'],
-      price: json['price'].toString(),
+      price: json['price'] ?? 0.0,
       oldPrice: json['oldPrice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -75,11 +75,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['oldprice'] = json["oldprice"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -90,7 +90,7 @@ class Product {
       name: json['name'],
       storeName: json['store_name'],
       imageUrl: json['image_url'] ?? json['imageUrl'],
-      price: json['price'].toString(),
+      price: json['price'],
       oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -172,11 +172,9 @@ class Cart extends ChangeNotifier {
   void addToCart(Map<String, dynamic> mapList) {
     cartList.add(mapList);
 
-    totalPrice += double.parse(mapList['price'].replaceFirst(',', '.'));
+    totalPrice += mapList['price'];
     if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
-      totalDiscount +=
-          double.parse(mapList['oldPrice'].replaceFirst(',', '.')) -
-              double.parse(mapList['price'].replaceFirst(',', '.'));
+      totalDiscount += mapList['oldPrice'] - mapList['price'];
     }
     notifyListeners();
   }
@@ -191,13 +189,11 @@ class Cart extends ChangeNotifier {
   void removeFromCart(int index) {
     final product = cartList[index];
 
-    totalPrice -= double.parse(product['price'].replaceAll(',', '.'));
+    totalPrice -= product['price'];
     if (totalPrice < 0) totalPrice = 0;
 
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
-      totalDiscount -=
-          double.parse(product['oldPrice'].replaceFirst(',', '.')) -
-              double.parse(product['price'].replaceFirst(',', '.'));
+      totalDiscount -= product['oldPrice'] - product['price'];
     }
     if (totalDiscount < 0) totalDiscount = 0;
     cartList.removeAt(index);
