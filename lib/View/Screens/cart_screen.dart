@@ -14,7 +14,6 @@ class _CartPageState extends ConsumerState<CartPage> {
   List<bool> _selectedItems = [];
 
   void _initializeSelection(int itemCount) {
-    // Инициализируем _selectedItems с учетом текущего количества элементов
     if (_selectedItems.length != itemCount) {
       _selectedItems = List<bool>.generate(itemCount, (index) => false);
     }
@@ -60,7 +59,12 @@ class _CartPageState extends ConsumerState<CartPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Закрыть'),
+              child: Text(
+                'Закрыть',
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
+              ),
             ),
           ],
         );
@@ -75,7 +79,6 @@ class _CartPageState extends ConsumerState<CartPage> {
     final totalPrice = cart.totalPrice;
     final discount = cart.totalDiscount;
 
-    // Инициализация выбранных элементов в зависимости от текущего количества товаров
     _initializeSelection(totalItems);
 
     return SafeArea(
@@ -101,8 +104,8 @@ class _CartPageState extends ConsumerState<CartPage> {
               label: "Корзина",
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.person_outlined),
-              label: "Профиль",
+              icon: Icon(Icons.settings_outlined),
+              label: "Настройки",
             ),
           ],
         ),
@@ -147,48 +150,63 @@ class _CartPageState extends ConsumerState<CartPage> {
                               margin: const EdgeInsets.symmetric(vertical: 8.0),
                               child: Row(
                                 children: [
-                                  Checkbox(
-                                    shape: const CircleBorder(),
-                                    activeColor: (Theme.of(context)
-                                        .colorScheme
-                                        .secondary),
-                                    value: _selectedItems[index],
-                                    onChanged: (value) =>
-                                        _onItemChanged(index, value),
-                                  ),
-                                  Image.network(
-                                    product['imageUrl'],
-                                    fit: BoxFit.contain,
-                                    width: 120,
-                                    height: 120,
-                                    loadingBuilder: (BuildContext context,
-                                        Widget child,
-                                        ImageChunkEvent? loadingProgress) {
-                                      if (loadingProgress == null) {
-                                        return child;
-                                      } else {
-                                        return Center(
-                                          child: CircularProgressIndicator(
-                                            color: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            value: loadingProgress
-                                                        .expectedTotalBytes !=
-                                                    null
-                                                ? loadingProgress
-                                                        .cumulativeBytesLoaded /
-                                                    (loadingProgress
-                                                        .expectedTotalBytes!)
-                                                : null,
-                                          ),
-                                        );
-                                      }
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        _selectedItems[index] =
+                                            !_selectedItems[index];
+                                      });
                                     },
-                                    errorBuilder: (BuildContext context,
-                                        Object error, StackTrace? stackTrace) {
-                                      return const Center(
-                                          child: Icon(Icons.error));
-                                    },
+                                    child: Row(
+                                      children: [
+                                        Checkbox(
+                                          shape: const CircleBorder(),
+                                          activeColor: (Theme.of(context)
+                                              .colorScheme
+                                              .secondary),
+                                          value: _selectedItems[index],
+                                          onChanged: (value) =>
+                                              _onItemChanged(index, value),
+                                        ),
+                                        Image.network(
+                                          product['imageUrl'],
+                                          fit: BoxFit.contain,
+                                          width: 120,
+                                          height: 120,
+                                          loadingBuilder: (BuildContext context,
+                                              Widget child,
+                                              ImageChunkEvent?
+                                                  loadingProgress) {
+                                            if (loadingProgress == null) {
+                                              return child;
+                                            } else {
+                                              return Center(
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  value: loadingProgress
+                                                              .expectedTotalBytes !=
+                                                          null
+                                                      ? loadingProgress
+                                                              .cumulativeBytesLoaded /
+                                                          (loadingProgress
+                                                              .expectedTotalBytes!)
+                                                      : null,
+                                                ),
+                                              );
+                                            }
+                                          },
+                                          errorBuilder: (BuildContext context,
+                                              Object error,
+                                              StackTrace? stackTrace) {
+                                            return const Center(
+                                                child: Icon(Icons.error));
+                                          },
+                                        ),
+                                      ],
+                                    ),
                                   ), //Text(product['name']),
                                   const SizedBox(width: 8),
                                   Expanded(
@@ -217,10 +235,49 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         const SizedBox(height: 4),
                                         if (product.containsKey('count'))
                                           Text(
-                                            'Итого: ${product['price'].toString()} руб.',
+                                            'Колличество: ${product['count'].toString()} шт ',
                                             style:
                                                 const TextStyle(fontSize: 14),
                                           ),
+                                        const SizedBox(height: 4),
+                                        if (product.containsKey('count'))
+                                          Text(
+                                            'Итого: ${((product['price'] * product['count'])).toStringAsFixed(2)} руб.',
+                                            style:
+                                                const TextStyle(fontSize: 14),
+                                          ),
+                                        const SizedBox(height: 4),
+                                        Center(
+                                            child: Row(children: [
+                                          TextButton(
+                                            onPressed: () {
+                                              cart.removeFromCart(index, true);
+                                            },
+                                            child: Text(
+                                              "-",
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 30),
+                                            ),
+                                          ),
+                                          TextButton(
+                                            onPressed: () {
+                                              cart.addToCart(product);
+                                            },
+                                            child: Text(
+                                              "+",
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 30),
+                                            ),
+                                          ),
+                                        ]))
                                       ],
                                     ),
                                   ),
@@ -241,15 +298,21 @@ class _CartPageState extends ConsumerState<CartPage> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 3.0, horizontal: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Товары ($totalItems)'),
-                      const SizedBox(height: 8),
-                      Text('Общая цена: ${totalPrice.toStringAsFixed(2)} руб.'),
-                      const SizedBox(height: 8),
-                      Text('Скидка: ${discount.toStringAsFixed(2)} руб.'),
-                    ],
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width - 16,
+                    child: Center(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Товары ($totalItems)'),
+                          const SizedBox(height: 8),
+                          Text(
+                              'Общая цена: ${totalPrice.toStringAsFixed(2)} руб.'),
+                          const SizedBox(height: 8),
+                          Text('Скидка: ${discount.toStringAsFixed(2)} руб.'),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

@@ -170,7 +170,22 @@ class Cart extends ChangeNotifier {
   double totalDiscount = 0.0;
 
   void addToCart(Map<String, dynamic> mapList) {
-    cartList.add(mapList);
+    bool add = true;
+    for (int i = 0; i < cartList.length; i++) {
+      if (mapList == cartList[i]) {
+        if (cartList[i].containsKey('count')) {
+          cartList[i]['count'] = cartList[i]['count'] + 1;
+        } else {
+          cartList[i]['count'] = 2;
+        }
+        add = false;
+        break;
+      }
+    }
+
+    if (add) {
+      cartList.add(mapList);
+    }
 
     totalPrice += mapList['price'];
     if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
@@ -186,7 +201,7 @@ class Cart extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFromCart(int index) {
+  void removeFromCart(int index, [bool countRemove = false]) {
     final product = cartList[index];
 
     totalPrice -= product['price'];
@@ -196,7 +211,19 @@ class Cart extends ChangeNotifier {
       totalDiscount -= product['oldPrice'] - product['price'];
     }
     if (totalDiscount < 0) totalDiscount = 0;
-    cartList.removeAt(index);
+
+    if (!countRemove) {
+      cartList.removeAt(index);
+    } else {
+      if (product.containsKey('count') && product['count'] > 1) {
+        cartList[index]['count'] -= 1;
+      } else if (!product.containsKey('count')) {
+        cartList.removeAt(index);
+      } else if (product.containsKey('count') && product['count'] == 1) {
+        cartList.removeAt(index);
+      }
+    }
+
     notifyListeners();
   }
 

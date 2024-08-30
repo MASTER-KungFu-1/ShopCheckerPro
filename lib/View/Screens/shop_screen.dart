@@ -257,8 +257,8 @@ class _ShopState extends ConsumerState<Shop> {
                 label: "Корзина",
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_outlined),
-                label: "Профиль",
+                icon: Icon(Icons.settings_outlined),
+                label: "Настройки",
               ),
             ],
           ),
