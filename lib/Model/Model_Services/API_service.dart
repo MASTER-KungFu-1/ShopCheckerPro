@@ -6,7 +6,6 @@ class ApiService {
   final String baseUrl = 'http://185.117.154.91:8000';
 
   Future<List<Product>> fetchPerekrestokProducts(String query) async {
-    //final url = '$baseUrl/perekrestok/$query/?format=json';
     final url = "$baseUrl/perekrestok/$query/";
     final response = await http.get(Uri.parse(url),
         headers: {'Content-Type': 'application/json; charset=UTF-8'});
@@ -75,5 +74,16 @@ class ApiService {
       print("Ошибка загрузки информации с поиска");
       return List.empty();
     }
+  }
+
+  Future<List> postRecomendedCart(List<Map<String, dynamic>> cartList) async {
+    final url = "$baseUrl/cluster/";
+
+    final response = await http.post(Uri.parse(url), headers: {
+      'Content-Type': 'application/json; charset=UTF-8',
+    }, body: {});
+
+    // 1 - cluster{}, >1 - result{}
+    //toApi target_product{} , List<Map<"target_product",dynamic>>
   }
 }

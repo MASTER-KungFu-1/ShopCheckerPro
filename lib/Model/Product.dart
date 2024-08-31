@@ -168,6 +168,9 @@ class Cart extends ChangeNotifier {
   List<Map<String, dynamic>> cartList = [];
   double totalPrice = 0.0;
   double totalDiscount = 0.0;
+  Map<String, dynamic> recomendCart = {};
+
+  void setRecomendCart(Map<String, dynamic> mapList) {}
 
   void addToCart(Map<String, dynamic> mapList) {
     bool add = true;
