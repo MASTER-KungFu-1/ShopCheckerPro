@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "Model_Services/API_service.dart";
 
 class Product {
   final String name;
@@ -168,9 +169,42 @@ class Cart extends ChangeNotifier {
   List<Map<String, dynamic>> cartList = [];
   double totalPrice = 0.0;
   double totalDiscount = 0.0;
-  Map<String, dynamic> recomendCart = {};
+  List recomendCart = [];
+  Map<String, dynamic> recCart = {};
+  ApiService api = ApiService();
+  Future<List> setRecomendCart() async {
+    List listRec = cartList;
+    bool clusters = true;
+    bool cartIsEmpty = false;
+    recCart = {};
+    recomendCart = [];
+    if (listRec.length > 1) {
+      recCart['products'] = listRec;
+    } else if (listRec.isEmpty) {
+      cartIsEmpty = true;
+    } else {
+      recCart = listRec[0];
+      clusters = false;
+    }
+    if (!cartIsEmpty) {
+      listRec = await api.postRecomendedCart(recCart);
+      if (listRec.isEmpty) {
+        print('Ошибка Кластеризации');
+        return [];
+      } else {
+        if (clusters) {
+          recomendCart = listRec;
+        } else {
+          recomendCart = listRec;
+        }
+        notifyListeners();
 
-  void setRecomendCart(Map<String, dynamic> mapList) {}
+        return recomendCart;
+      }
+    } else {
+      return [];
+    }
+  }
 
   void addToCart(Map<String, dynamic> mapList) {
     bool add = true;
@@ -216,13 +250,19 @@ class Cart extends ChangeNotifier {
     if (totalDiscount < 0) totalDiscount = 0;
 
     if (!countRemove) {
+      try {
+        recomendCart.removeAt(index);
+      } catch (e) {}
+
       cartList.removeAt(index);
     } else {
       if (product.containsKey('count') && product['count'] > 1) {
         cartList[index]['count'] -= 1;
       } else if (!product.containsKey('count')) {
+        recomendCart.removeAt(index);
         cartList.removeAt(index);
       } else if (product.containsKey('count') && product['count'] == 1) {
+        recomendCart.removeAt(index);
         cartList.removeAt(index);
       }
     }
