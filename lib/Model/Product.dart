@@ -221,12 +221,24 @@ class Cart extends ChangeNotifier {
     }
 
     if (add) {
+      if (mapList.containsKey('image_url')) {
+        mapList['imageUrl'] = mapList['image_url'];
+      }
+
       cartList.add(mapList);
     }
-
+    String info1 = '';
+    if (mapList['price'].runtimeType == String) {
+      mapList['price'] = double.parse(mapList['price'].replaceFirst(',', '.'));
+    }
     totalPrice += mapList['price'];
     if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
-      totalDiscount += mapList['oldPrice'] - mapList['price'];
+      if (mapList['oldPrice'].runtimeType == String) {
+        mapList['oldPrice'] =
+            double.parse(mapList['oldPrice'].replaceFirst(',', '.'));
+      }
+      info1 = (mapList['oldPrice'] - mapList['price']).toStringAsFixed(2);
+      totalDiscount += double.parse(info1);
     }
     notifyListeners();
   }
@@ -242,15 +254,28 @@ class Cart extends ChangeNotifier {
     final product = cartList[index];
 
     totalPrice -= product['price'];
-    if (totalPrice < 0) totalPrice = 0;
 
+    if (totalPrice < 0) totalPrice = 0;
+    String info1 = '';
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
-      totalDiscount -= product['oldPrice'] - product['price'];
+      info1 = (product['oldPrice'] - product['price']).toStringAsFixed(2);
+
+      totalDiscount -= double.parse(info1);
     }
     if (totalDiscount < 0) totalDiscount = 0;
 
     if (!countRemove) {
       try {
+        if (product.containsKey('count') && product['count'] > 1) {
+          totalPrice -= product['price'] * (product['count'] - 1);
+          if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
+            info1 = (product['oldPrice'] - product['price']).toStringAsFixed(2);
+
+            totalDiscount -= double.parse(info1) * product['count'] - 1;
+          }
+          if (totalPrice < 0) totalPrice = 0;
+          if (totalDiscount < 0) totalDiscount = 0;
+        }
         recomendCart.removeAt(index);
       } catch (e) {}
 

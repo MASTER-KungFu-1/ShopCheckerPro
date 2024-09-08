@@ -260,6 +260,11 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                 style: const TextStyle(
                                                     fontSize: 14),
                                               ),
+                                            Text(
+                                              'Магазин: ${product['store_name'].toString()}',
+                                              style:
+                                                  const TextStyle(fontSize: 14),
+                                            ),
                                             const SizedBox(height: 4),
                                             Center(
                                               child: Row(
@@ -341,66 +346,98 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         return SizedBox(
                                           width:
                                               MediaQuery.of(context).size.width,
-                                          height: 140,
+                                          height: 250,
                                           child: ListView.builder(
                                             itemCount: data.length,
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, index) {
                                               final recInfo = data[index];
                                               {
-                                                return Card(
-                                                  margin: const EdgeInsets
-                                                      .symmetric(vertical: 8.0),
-                                                  child: Column(
-                                                    children: [
-                                                      Image.network(
-                                                        recInfo['image_url'],
-                                                        fit: BoxFit.contain,
-                                                        width: 100,
-                                                        height: 100,
-                                                        loadingBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                Widget child,
-                                                                ImageChunkEvent?
-                                                                    loadingProgress) {
-                                                          if (loadingProgress ==
-                                                              null) {
-                                                            return child;
-                                                          } else {
-                                                            return Center(
-                                                              child:
-                                                                  CircularProgressIndicator(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .secondary,
-                                                                value: loadingProgress
-                                                                            .expectedTotalBytes !=
-                                                                        null
-                                                                    ? loadingProgress
-                                                                            .cumulativeBytesLoaded /
-                                                                        (loadingProgress
-                                                                            .expectedTotalBytes!)
-                                                                    : null,
-                                                              ),
-                                                            );
-                                                          }
-                                                        },
-                                                        errorBuilder:
-                                                            (BuildContext
-                                                                    context,
-                                                                Object error,
-                                                                StackTrace?
-                                                                    stackTrace) {
-                                                          return const Center(
-                                                              child: Icon(
-                                                                  Icons.error));
-                                                        },
+                                                return InkWell(
+                                                    onTap: () => setState(() {
+                                                          (cart.addToCart(
+                                                              recInfo));
+                                                        }),
+                                                    child: Card(
+                                                      margin: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 8.0),
+                                                      child: Column(
+                                                        children: [
+                                                          Image.network(
+                                                            recInfo[
+                                                                'image_url'],
+                                                            fit: BoxFit.contain,
+                                                            width: 100,
+                                                            height: 100,
+                                                            loadingBuilder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    Widget
+                                                                        child,
+                                                                    ImageChunkEvent?
+                                                                        loadingProgress) {
+                                                              if (loadingProgress ==
+                                                                  null) {
+                                                                return child;
+                                                              } else {
+                                                                return Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                    color: Theme.of(
+                                                                            context)
+                                                                        .colorScheme
+                                                                        .secondary,
+                                                                    value: loadingProgress.expectedTotalBytes !=
+                                                                            null
+                                                                        ? loadingProgress.cumulativeBytesLoaded /
+                                                                            (loadingProgress.expectedTotalBytes!)
+                                                                        : null,
+                                                                  ),
+                                                                );
+                                                              }
+                                                            },
+                                                            errorBuilder:
+                                                                (BuildContext
+                                                                        context,
+                                                                    Object
+                                                                        error,
+                                                                    StackTrace?
+                                                                        stackTrace) {
+                                                              return const Center(
+                                                                  child: Icon(Icons
+                                                                      .error));
+                                                            },
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          SizedBox(
+                                                            height: 70,
+                                                            width: 100,
+                                                            child: Text(
+                                                              recInfo['name'],
+                                                              softWrap: true,
+                                                              style: const TextStyle(
+                                                                  fontSize: 12,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .bold),
+                                                            ),
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          Text(
+                                                              'Цена: ${recInfo['price'].toString()} руб.'),
+                                                          const SizedBox(
+                                                            height: 5,
+                                                          ),
+                                                          Text(
+                                                              'Магазин: ${recInfo['store_name']}'),
+                                                        ],
                                                       ),
-                                                    ],
-                                                  ),
-                                                );
+                                                    ));
                                               }
                                             },
                                           ),

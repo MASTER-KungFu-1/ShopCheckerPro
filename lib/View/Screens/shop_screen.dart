@@ -56,7 +56,8 @@ class _ShopState extends ConsumerState<Shop> {
           'name': product.name,
           'price': product.price,
           'oldPrice': product.oldPrice,
-          'imageUrl': product.imageUrl
+          'imageUrl': product.imageUrl,
+          'store_name': product.storeName,
         };
         return InkWell(
           radius: 50.0,
