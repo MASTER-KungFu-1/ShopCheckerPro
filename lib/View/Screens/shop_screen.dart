@@ -23,7 +23,6 @@ class _ShopState extends ConsumerState<Shop> {
       ref
           .read(shopViewModelProvider)
           .loadProducts(_searchController.text, context);
-
       ref.read(cartModelProvider);
     });
   }
@@ -37,14 +36,11 @@ class _ShopState extends ConsumerState<Shop> {
 
   void _onSearchChanged(String value) {
     if (_debounce?.isActive ?? false) _debounce?.cancel();
-    if (value.length <= 3) {
-    } else {
-      int debounceDuration = value.length <= 3 ? 1000 : 500;
+    int debounceDuration = value.length <= 3 ? 1000 : 500;
 
-      _debounce = Timer(Duration(milliseconds: debounceDuration), () {
-        ref.read(shopViewModelProvider).loadProducts(value, context);
-      });
-    }
+    _debounce = Timer(Duration(milliseconds: debounceDuration), () {
+      ref.read(shopViewModelProvider).loadProducts(value, context);
+    });
   }
 
   Widget buildGrid(int crossAxisCount, double itemHeightFactor) {
@@ -53,21 +49,22 @@ class _ShopState extends ConsumerState<Shop> {
       crossAxisCount: crossAxisCount,
       crossAxisSpacing: 10.0,
       mainAxisSpacing: 10.0,
-      itemCount: viewModel.products.length,
+      itemCount: viewModel.filteredProducts.length,
       itemBuilder: (BuildContext context, int index) {
-        final product = viewModel.products[index];
+        final product = viewModel.filteredProducts[index];
         final productMap = {
           'name': product.name,
           'price': product.price,
           'oldPrice': product.oldPrice,
-          'imageUrl': product.imageUrl
+          'imageUrl': product.imageUrl,
+          'store_name': product.storeName,
         };
         return InkWell(
+          radius: 50.0,
+          splashColor: Theme.of(context).colorScheme.secondary,
           onTap: () {
             ref.read(cartModelProvider).addToCart(productMap);
-            viewModel.handleTapOutside(
-              context,
-            );
+            viewModel.handleTapOutside(context);
           },
           onDoubleTap: () {
             Cart provider = ref.read(cartModelProvider);
@@ -77,7 +74,6 @@ class _ShopState extends ConsumerState<Shop> {
                   cart[i]['price'] == product.price) {
                 provider.removeFromCart(i);
                 viewModel.handleTapOutside(context);
-
                 break;
               }
             }
@@ -130,7 +126,7 @@ class _ShopState extends ConsumerState<Shop> {
                       const SizedBox(height: 4),
                       if (product.hasDiscount)
                         Text(
-                          'Старая цена: ${product.oldPrice}',
+                          'Старая цена: ${product.oldPrice.toString()}',
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(context).colorScheme.error,
@@ -140,7 +136,7 @@ class _ShopState extends ConsumerState<Shop> {
                           ),
                         ),
                       Text(
-                        'Цена: ${product.price} руб.',
+                        'Цена: ${product.price.toString()} руб.',
                         style: TextStyle(
                           fontSize: 12,
                           color: Theme.of(context).colorScheme.secondary,
@@ -178,7 +174,7 @@ class _ShopState extends ConsumerState<Shop> {
               actions: [
                 SizedBox(
                   height: 60,
-                  width: MediaQuery.of(context).size.width,
+                  width: MediaQuery.of(context).size.width - 50,
                   child: TextField(
                     cursorColor: Theme.of(context).colorScheme.secondary,
                     controller: _searchController,
@@ -210,13 +206,38 @@ class _ShopState extends ConsumerState<Shop> {
                     onChanged: _onSearchChanged,
                   ),
                 ),
-                // SizedBox(
-                //     height: 55,
-                //     width: 50,
-                //     child: IconButton(
-                //       icon: const Icon(Icons.filter_list_outlined),
-                //       onPressed: () {},
-                //     )),
+                SizedBox(
+                  height: 55,
+                  width: 50,
+                  child: PopupMenuButton<String>(
+                    icon: const Icon(Icons.filter_list_outlined),
+                    onSelected: (String result) {
+                      if (result.startsWith('Store:')) {
+                        ref
+                            .read(shopViewModelProvider)
+                            .updateStoreFilter(result.substring(6));
+                      } else if (result.startsWith('Sort:')) {
+                        ref
+                            .read(shopViewModelProvider)
+                            .updateSortFilter(result.substring(5));
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <String>[
+                      'Store:Все магазины',
+                      'Store:Магнит',
+                      'Store:Перекресток',
+                      'Store:Ашан',
+                      'Sort:Без сортировки',
+                      'Sort:По возрастанию',
+                      'Sort:По убыванию',
+                    ].map((String choice) {
+                      return PopupMenuItem<String>(
+                        value: choice,
+                        child: Text(choice),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -237,8 +258,8 @@ class _ShopState extends ConsumerState<Shop> {
                 label: "Корзина",
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.person_outlined),
-                label: "Профиль",
+                icon: Icon(Icons.settings_outlined),
+                label: "Настройки",
               ),
             ],
           ),

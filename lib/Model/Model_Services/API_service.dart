@@ -6,7 +6,6 @@ class ApiService {
   final String baseUrl = 'http://185.117.154.91:8000';
 
   Future<List<Product>> fetchPerekrestokProducts(String query) async {
-    //final url = '$baseUrl/perekrestok/$query/?format=json';
     final url = "$baseUrl/perekrestok/$query/";
     final response = await http.get(Uri.parse(url),
         headers: {'Content-Type': 'application/json; charset=UTF-8'});
@@ -47,7 +46,6 @@ class ApiService {
     if (query == "") {
       query = "кола";
     } else if (query.length < 3) {}
-    print(query);
     final url = "$baseUrl/search/$query/";
 
     final response = await http.get(Uri.parse(url),
@@ -73,6 +71,51 @@ class ApiService {
       return dataDecode.map((item) => Product.fromSearchJson(item)).toList();
     } else {
       print("Ошибка загрузки информации с поиска");
+      return List.empty();
+    }
+  }
+
+  Future<List> postRecomendedCart(Map<String, dynamic> cartList) async {
+    final initialUrl = "$baseUrl/cluster/";
+    final body = json.encode(cartList);
+
+    var response = await http.post(
+      Uri.parse(initialUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    // Обработка перенаправлений
+    while (response.statusCode == 307) {
+      final redirectUrl = response.headers['location'];
+      if (redirectUrl == null) {
+        print('Не удалось получить URL перенаправления');
+        return List.empty();
+      }
+
+      response = await http.post(
+        Uri.parse(redirectUrl),
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      );
+    }
+
+    // Проверка на успешный ответ
+    if (response.statusCode == 200) {
+      final decodedResponse = utf8.decode(response.bodyBytes);
+      final Map<String, dynamic> data = json.decode(decodedResponse);
+
+      if (data.containsKey('result')) {
+        return List.from(data['result']);
+      } else if (data.containsKey('cluster')) {
+        return List.from(data['cluster']);
+      } else {
+        print('Ответ не содержит ключ "result"');
+        return List.empty();
+      }
+    } else {
+      print('Ошибка: ${response.statusCode}');
+      print('Ответ: ${response.body}');
       return List.empty();
     }
   }

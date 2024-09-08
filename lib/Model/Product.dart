@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import "Model_Services/API_service.dart";
 
 class Product {
   final String name;
   final String storeName;
   final String imageUrl;
-  final String price;
-  final String? oldPrice;
+  final double price;
+  final double? oldPrice;
   final bool hasDiscount;
   final String? discountPercent;
 
@@ -25,11 +26,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['price'] = json["price"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -39,7 +40,7 @@ class Product {
       name: json['name'],
       storeName: json['store_name'],
       imageUrl: json['image_url'],
-      price: json['price'] ?? "Акция",
+      price: json['price'] ?? 0.0,
       oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -50,11 +51,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['price'] = json["price"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -64,7 +65,7 @@ class Product {
       name: json['name'],
       storeName: 'magnit',
       imageUrl: json['imageUrl'],
-      price: json['price'].toString(),
+      price: json['price'] ?? 0.0,
       oldPrice: json['oldPrice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -75,11 +76,11 @@ class Product {
     if (json['image_url'].runtimeType != String) {
       json['image_url'] = json["image_url"].toString();
     }
-    if (json['price'].runtimeType != String) {
-      json['price'] = json["price"].toString();
+    if (json['price'].runtimeType != double) {
+      json['price'] = double.parse(json["price"].replaceFirst(',', '.'));
     }
-    if (json['oldprice'].runtimeType != String && json['oldprice'] != null) {
-      json['oldprice'] = json["oldprice"].toString();
+    if (json['oldprice'].runtimeType != double && json['oldprice'] != null) {
+      json['oldprice'] = double.parse(json["oldprice"].replaceFirst(',', '.'));
     }
     if (json['discountPercent'].runtimeType != String &&
         json['discountPercent'] != null) {
@@ -90,7 +91,7 @@ class Product {
       name: json['name'],
       storeName: json['store_name'],
       imageUrl: json['image_url'] ?? json['imageUrl'],
-      price: json['price'].toString(),
+      price: json['price'],
       oldPrice: json['oldprice'],
       hasDiscount: json['discount'] ?? false,
       discountPercent: json['discountPercent'],
@@ -168,15 +169,76 @@ class Cart extends ChangeNotifier {
   List<Map<String, dynamic>> cartList = [];
   double totalPrice = 0.0;
   double totalDiscount = 0.0;
+  List recomendCart = [];
+  Map<String, dynamic> recCart = {};
+  ApiService api = ApiService();
+  Future<List> setRecomendCart() async {
+    List listRec = cartList;
+    bool clusters = true;
+    bool cartIsEmpty = false;
+    recCart = {};
+    recomendCart = [];
+    if (listRec.length > 1) {
+      recCart['products'] = listRec;
+    } else if (listRec.isEmpty) {
+      cartIsEmpty = true;
+    } else {
+      recCart = listRec[0];
+      clusters = false;
+    }
+    if (!cartIsEmpty) {
+      listRec = await api.postRecomendedCart(recCart);
+      if (listRec.isEmpty) {
+        print('Ошибка Кластеризации');
+        return [];
+      } else {
+        if (clusters) {
+          recomendCart = listRec;
+        } else {
+          recomendCart = listRec;
+        }
+        notifyListeners();
+
+        return recomendCart;
+      }
+    } else {
+      return [];
+    }
+  }
 
   void addToCart(Map<String, dynamic> mapList) {
-    cartList.add(mapList);
+    bool add = true;
+    for (int i = 0; i < cartList.length; i++) {
+      if (mapList == cartList[i]) {
+        if (cartList[i].containsKey('count')) {
+          cartList[i]['count'] = cartList[i]['count'] + 1;
+        } else {
+          cartList[i]['count'] = 2;
+        }
+        add = false;
+        break;
+      }
+    }
 
-    totalPrice += double.parse(mapList['price'].replaceFirst(',', '.'));
+    if (add) {
+      if (mapList.containsKey('image_url')) {
+        mapList['imageUrl'] = mapList['image_url'];
+      }
+
+      cartList.add(mapList);
+    }
+    String info1 = '';
+    if (mapList['price'].runtimeType == String) {
+      mapList['price'] = double.parse(mapList['price'].replaceFirst(',', '.'));
+    }
+    totalPrice += mapList['price'];
     if (mapList.containsKey('oldPrice') && mapList['oldPrice'] != null) {
-      totalDiscount +=
-          double.parse(mapList['oldPrice'].replaceFirst(',', '.')) -
-              double.parse(mapList['price'].replaceFirst(',', '.'));
+      if (mapList['oldPrice'].runtimeType == String) {
+        mapList['oldPrice'] =
+            double.parse(mapList['oldPrice'].replaceFirst(',', '.'));
+      }
+      info1 = (mapList['oldPrice'] - mapList['price']).toStringAsFixed(2);
+      totalDiscount += double.parse(info1);
     }
     notifyListeners();
   }
@@ -188,19 +250,48 @@ class Cart extends ChangeNotifier {
     notifyListeners();
   }
 
-  void removeFromCart(int index) {
+  void removeFromCart(int index, [bool countRemove = false]) {
     final product = cartList[index];
 
-    totalPrice -= double.parse(product['price'].replaceAll(',', '.'));
-    if (totalPrice < 0) totalPrice = 0;
+    totalPrice -= product['price'];
 
+    if (totalPrice < 0) totalPrice = 0;
+    String info1 = '';
     if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
-      totalDiscount -=
-          double.parse(product['oldPrice'].replaceFirst(',', '.')) -
-              double.parse(product['price'].replaceFirst(',', '.'));
+      info1 = (product['oldPrice'] - product['price']).toStringAsFixed(2);
+
+      totalDiscount -= double.parse(info1);
     }
     if (totalDiscount < 0) totalDiscount = 0;
-    cartList.removeAt(index);
+
+    if (!countRemove) {
+      try {
+        if (product.containsKey('count') && product['count'] > 1) {
+          totalPrice -= product['price'] * (product['count'] - 1);
+          if (product.containsKey('oldPrice') && product['oldPrice'] != null) {
+            info1 = (product['oldPrice'] - product['price']).toStringAsFixed(2);
+
+            totalDiscount -= double.parse(info1) * product['count'] - 1;
+          }
+          if (totalPrice < 0) totalPrice = 0;
+          if (totalDiscount < 0) totalDiscount = 0;
+        }
+        recomendCart.removeAt(index);
+      } catch (e) {}
+
+      cartList.removeAt(index);
+    } else {
+      if (product.containsKey('count') && product['count'] > 1) {
+        cartList[index]['count'] -= 1;
+      } else if (!product.containsKey('count')) {
+        recomendCart.removeAt(index);
+        cartList.removeAt(index);
+      } else if (product.containsKey('count') && product['count'] == 1) {
+        recomendCart.removeAt(index);
+        cartList.removeAt(index);
+      }
+    }
+
     notifyListeners();
   }
 
