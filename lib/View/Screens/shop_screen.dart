@@ -59,11 +59,11 @@ class _ShopState extends ConsumerState<Shop> {
           'imageUrl': product.imageUrl,
           'store_name': product.storeName,
         };
+
         return InkWell(
-          radius: 50.0,
-          splashColor: Theme.of(context).colorScheme.secondary,
           onTap: () {
             ref.read(cartModelProvider).addToCart(productMap);
+
             viewModel.handleTapOutside(context);
           },
           onDoubleTap: () {

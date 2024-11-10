@@ -172,6 +172,25 @@ class Cart extends ChangeNotifier {
   List recomendCart = [];
   Map<String, dynamic> recCart = {};
   ApiService api = ApiService();
+
+  // Future<List> addIntoRecomendCart(index) async {
+  //   if (recomendCart.isEmpty) {
+  //     return [];
+  //   } else {
+  //     List listRec = recomendCart;
+  //     Map<String, dynamic> recCart = cartList[index];
+  //     try {
+  //       listRec.add(await api.postRecomendedCart(recCart));
+  //       recomendCart = listRec;
+  //     } catch (e) {
+  //       print(e.toString());
+  //       listRec.add([]);
+  //     }
+
+  //     return listRec;
+  //   }
+  // }
+
   Future<List> setRecomendCart() async {
     List listRec = cartList;
     bool clusters = true;
@@ -206,10 +225,11 @@ class Cart extends ChangeNotifier {
     }
   }
 
-  void addToCart(Map<String, dynamic> mapList) {
+  void addToCart(Map<String, dynamic> mapList, [bool inActiveCart = false]) {
     bool add = true;
+
     for (int i = 0; i < cartList.length; i++) {
-      if (mapList == cartList[i]) {
+      if (mapList['name'] == cartList[i]['name']) {
         if (cartList[i].containsKey('count')) {
           cartList[i]['count'] = cartList[i]['count'] + 1;
         } else {

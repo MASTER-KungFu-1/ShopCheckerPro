@@ -38,6 +38,10 @@ class _CartPageState extends ConsumerState<CartPage> {
     setState(() {
       for (int i = _selectedItems.length - 1; i >= 0; i--) {
         if (_selectedItems[i]) {
+          if (cart.cartList[i].containsKey('count')) {
+            cart.removeFromCart(i, true);
+          }
+
           cart.removeFromCart(i);
         }
       }
@@ -87,7 +91,6 @@ class _CartPageState extends ConsumerState<CartPage> {
     final totalItems = cart.cartList.length;
     final totalPrice = cart.totalPrice;
     final discount = cart.totalDiscount;
-
     _initializeSelection(totalItems);
 
     return SafeArea(
@@ -339,9 +342,27 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                 'Ошибка: ${snapshot.error}'));
                                       } else if (snapshot.hasData) {
                                         List data = snapshot.data!;
-                                        if (data[index]
-                                            .containsKey('cluster')) {
-                                          data = data[index]['cluster'];
+                                        try {
+                                          if (data[index]
+                                              .containsKey('cluster')) {
+                                            data = data[index]['cluster'];
+                                          }
+                                        } catch (e) {
+                                          if (e
+                                              .toString()
+                                              .contains('RangeError (index)')) {
+                                            data = [];
+                                            return const Center(
+                                              child: Padding(
+                                                padding: EdgeInsets.symmetric(
+                                                    horizontal: 10),
+                                                child: Text(
+                                                    'Чтобы получить похожие товары, для этого товара, перезагрузите корзину'),
+                                              ),
+                                            );
+                                          } else {
+                                            print(e);
+                                          }
                                         }
                                         return SizedBox(
                                           width:
@@ -352,16 +373,18 @@ class _CartPageState extends ConsumerState<CartPage> {
                                             scrollDirection: Axis.horizontal,
                                             itemBuilder: (context, index) {
                                               final recInfo = data[index];
+
                                               {
                                                 return InkWell(
                                                     onTap: () => setState(() {
                                                           (cart.addToCart(
                                                               recInfo));
+                                                          ;
                                                         }),
                                                     child: Card(
                                                       margin: const EdgeInsets
                                                               .symmetric(
-                                                          vertical: 8.0),
+                                                          horizontal: 8.0),
                                                       child: Column(
                                                         children: [
                                                           Image.network(
@@ -412,29 +435,44 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                           const SizedBox(
                                                             height: 5,
                                                           ),
-                                                          SizedBox(
-                                                            height: 70,
-                                                            width: 100,
-                                                            child: Text(
-                                                              recInfo['name'],
-                                                              softWrap: true,
-                                                              style: const TextStyle(
+                                                          Padding(
+                                                            padding:
+                                                                const EdgeInsets
+                                                                        .symmetric(
+                                                                    horizontal:
+                                                                        8.0),
+                                                            child: SizedBox(
+                                                              height: 70,
+                                                              width: 130,
+                                                              child: Text(
+                                                                recInfo['name'],
+                                                                softWrap: true,
+                                                                style:
+                                                                    const TextStyle(
                                                                   fontSize: 12,
                                                                   fontWeight:
                                                                       FontWeight
-                                                                          .bold),
+                                                                          .bold,
+                                                                ),
+                                                              ),
                                                             ),
                                                           ),
                                                           const SizedBox(
-                                                            height: 5,
+                                                            height: 1,
                                                           ),
                                                           Text(
-                                                              'Цена: ${recInfo['price'].toString()} руб.'),
+                                                            '${recInfo['price'].toString()} руб.',
+                                                            style: TextStyle(
+                                                                color: Theme.of(
+                                                                        context)
+                                                                    .colorScheme
+                                                                    .secondary),
+                                                          ),
                                                           const SizedBox(
-                                                            height: 5,
+                                                            height: 1,
                                                           ),
                                                           Text(
-                                                              'Магазин: ${recInfo['store_name']}'),
+                                                              '${recInfo['store_name']}'),
                                                         ],
                                                       ),
                                                     ));
