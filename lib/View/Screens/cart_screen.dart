@@ -102,6 +102,11 @@ class _CartPageState extends ConsumerState<CartPage> {
           onTap: (int index) {
             if (index == 0) {
               Navigator.pop(context);
+            } else if (index == 2) {
+              Navigator.pushReplacementNamed(
+                context,
+                '/settings',
+              );
             }
           },
           currentIndex: 1,
@@ -379,7 +384,6 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                     onTap: () => setState(() {
                                                           (cart.addToCart(
                                                               recInfo));
-                                                          ;
                                                         }),
                                                     child: Card(
                                                       margin: const EdgeInsets
@@ -499,6 +503,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                         )),
               const SizedBox(height: 5),
               Card(
+                color: Theme.of(context).colorScheme.background,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

@@ -245,6 +245,8 @@ class _ShopState extends ConsumerState<Shop> {
             onTap: (int index) {
               if (index == 1) {
                 Navigator.pushNamed(context, '/cart');
+              } else if (index == 2) {
+                Navigator.pushNamed(context, '/settings');
               }
             },
             selectedItemColor: Theme.of(context).colorScheme.secondary,

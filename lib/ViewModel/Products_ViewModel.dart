@@ -9,6 +9,7 @@ class ShopViewModel extends ChangeNotifier {
   final List<FocusNode> buttonFocusNodes = [];
   List<Product> filteredProducts = [];
   List<Product> products = [];
+
   bool isLoading = false;
   String errorMessage = '';
   Map<String, bool> data = {
