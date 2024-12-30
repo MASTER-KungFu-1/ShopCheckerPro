@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:shopcheckerpro/View/Screens/shop_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'View/Screens/cart_screen.dart';
-import 'View/Screens/settings.dart';
+import 'View/Screens/settings_screen.dart';
 import 'ViewModel/Settings_ViewModel.dart';
 
 void main() async {
@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'ShopCheckerPro',
       theme: ThemeData(
+        fontFamily: 'OpenSans',
         colorScheme: colorScheme['ligth'],
         // colorScheme: const ColorScheme.light(
         //     background: Color.fromARGB(232, 255, 255, 255),

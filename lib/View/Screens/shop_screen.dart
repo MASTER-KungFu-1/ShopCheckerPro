@@ -118,35 +118,53 @@ class _ShopState extends ConsumerState<Shop> {
                       Text(
                         product.name,
                         style: TextStyle(
-                          fontSize: 12,
+                          fontSize: 13,
                           color: Theme.of(context).colorScheme.onPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 4),
                       if (product.hasDiscount)
-                        Text(
-                          'Старая цена: ${product.oldPrice.toString()}',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Theme.of(context).colorScheme.error,
-                            decoration: TextDecoration.lineThrough,
-                            decorationColor:
-                                Theme.of(context).colorScheme.onPrimary,
+                        Row(
+                          children: [
+                            Text(
+                              '${product.price.toString()}₽',
+                              style: TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                            Text(
+                              product.oldPrice.toString(),
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black87,
+                                decoration: TextDecoration.lineThrough,
+                                decorationColor:
+                                    Theme.of(context).colorScheme.onPrimary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      if (!product.hasDiscount)
+                        Center(
+                          child: Text(
+                            '${product.price.toString()}₽',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
                           ),
                         ),
-                      Text(
-                        'Цена: ${product.price.toString()} руб.',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
-                      ),
-                      Text(
-                        'Магазин: ${product.storeName}',
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                      Center(
+                        child: Text(
+                          product.storeName,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Theme.of(context).colorScheme.onPrimary,
+                          ),
                         ),
                       ),
                     ],
@@ -210,7 +228,10 @@ class _ShopState extends ConsumerState<Shop> {
                   height: 55,
                   width: 50,
                   child: PopupMenuButton<String>(
-                    icon: const Icon(Icons.filter_list_outlined),
+                    icon: Icon(
+                      Icons.filter_list_outlined,
+                      color: Theme.of(context).colorScheme.secondary,
+                    ),
                     onSelected: (String result) {
                       if (result.startsWith('Store:')) {
                         ref
