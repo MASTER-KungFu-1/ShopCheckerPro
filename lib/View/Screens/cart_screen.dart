@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shopcheckerpro/Model/Product.dart';
+import 'package:shopchecker/Model/Product.dart';
 
 class CartPage extends ConsumerStatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -96,7 +96,7 @@ class _CartPageState extends ConsumerState<CartPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Корзина'),
+          title: Center(child: const Text('Корзина')),
         ),
         bottomNavigationBar: BottomNavigationBar(
           onTap: (int index) {
@@ -142,11 +142,12 @@ class _CartPageState extends ConsumerState<CartPage> {
                   const Text('Выбрать все'),
                   const Spacer(),
                   ElevatedButton(
+                    style: ButtonStyle(
+                        backgroundColor: WidgetStatePropertyAll(
+                            Theme.of(context).colorScheme.onSecondary)),
                     onPressed: _onDeleteSelected,
                     child: Text(
                       'Удалить выбранные',
-                      style: TextStyle(
-                          color: Theme.of(context).colorScheme.onPrimary),
                     ),
                   ),
                 ],
@@ -242,36 +243,51 @@ class _CartPageState extends ConsumerState<CartPage> {
                                                 product['name'],
                                                 maxLines: 3,
                                                 overflow: TextOverflow.ellipsis,
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.bold,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary,
                                                 ),
                                               ),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
                                               'Цена: ${product['price'].toString()} руб.',
-                                              style:
-                                                  const TextStyle(fontSize: 14),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary),
                                             ),
                                             const SizedBox(height: 4),
                                             if (product.containsKey('count'))
                                               Text(
                                                 'Колличество: ${product['count'].toString()} шт ',
-                                                style: const TextStyle(
-                                                    fontSize: 14),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimary),
                                               ),
                                             const SizedBox(height: 4),
                                             if (product.containsKey('count'))
                                               Text(
                                                 'Итого: ${((product['price'] * product['count'])).toStringAsFixed(2)} руб.',
-                                                style: const TextStyle(
-                                                    fontSize: 14),
+                                                style: TextStyle(
+                                                    fontSize: 14,
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .onPrimary),
                                               ),
                                             Text(
                                               'Магазин: ${product['store_name'].toString()}',
-                                              style:
-                                                  const TextStyle(fontSize: 14),
+                                              style: TextStyle(
+                                                  fontSize: 14,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary),
                                             ),
                                             const SizedBox(height: 4),
                                             Center(
@@ -339,35 +355,61 @@ class _CartPageState extends ConsumerState<CartPage> {
                                         AsyncSnapshot<List> snapshot) {
                                       if (snapshot.connectionState ==
                                           ConnectionState.waiting) {
-                                        return const Center(
-                                            child: CircularProgressIndicator());
+                                        return Center(
+                                            child: CircularProgressIndicator(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                        ));
                                       } else if (snapshot.hasError) {
                                         return Center(
                                             child: Text(
                                                 'Ошибка: ${snapshot.error}'));
                                       } else if (snapshot.hasData) {
                                         List data = snapshot.data!;
+
                                         try {
                                           if (data[index]
                                               .containsKey('cluster')) {
                                             data = data[index]['cluster'];
                                           }
                                         } catch (e) {
-                                          if (e
-                                              .toString()
-                                              .contains('RangeError (index)')) {
+                                          if (e.toString().contains(
+                                                  'RangeError (index)') ||
+                                              e
+                                                  .toString()
+                                                  .contains('Invalid value')) {
                                             data = [];
-                                            return const Center(
+                                            return Center(
                                               child: Padding(
                                                 padding: EdgeInsets.symmetric(
                                                     horizontal: 10),
                                                 child: Text(
-                                                    'Чтобы получить похожие товары, для этого товара, перезагрузите корзину'),
+                                                  'Чтобы получить похожие товары, для этого товара, перезагрузите корзину',
+                                                  softWrap: true,
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .colorScheme
+                                                          .secondary,
+                                                      fontSize: 16),
+                                                ),
                                               ),
                                             );
                                           } else {
                                             print(e);
                                           }
+                                        }
+                                        if (data.isEmpty) {
+                                          return Center(
+                                            child: Text(
+                                              'Для данного товара не удалось найти похожих товаров',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .secondary,
+                                                  fontSize: 16),
+                                            ),
+                                          );
                                         }
                                         return SizedBox(
                                           width:
@@ -379,108 +421,117 @@ class _CartPageState extends ConsumerState<CartPage> {
                                             itemBuilder: (context, index) {
                                               final recInfo = data[index];
 
-                                              {
-                                                return InkWell(
-                                                    onTap: () => setState(() {
-                                                          (cart.addToCart(
-                                                              recInfo));
-                                                        }),
-                                                    child: Card(
-                                                      margin: const EdgeInsets
-                                                              .symmetric(
-                                                          horizontal: 8.0),
-                                                      child: Column(
-                                                        children: [
-                                                          Image.network(
-                                                            recInfo[
-                                                                'image_url'],
-                                                            fit: BoxFit.contain,
-                                                            width: 100,
-                                                            height: 100,
-                                                            loadingBuilder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    Widget
-                                                                        child,
-                                                                    ImageChunkEvent?
-                                                                        loadingProgress) {
-                                                              if (loadingProgress ==
-                                                                  null) {
-                                                                return child;
-                                                              } else {
-                                                                return Center(
-                                                                  child:
-                                                                      CircularProgressIndicator(
-                                                                    color: Theme.of(
-                                                                            context)
-                                                                        .colorScheme
-                                                                        .secondary,
-                                                                    value: loadingProgress.expectedTotalBytes !=
-                                                                            null
-                                                                        ? loadingProgress.cumulativeBytesLoaded /
-                                                                            (loadingProgress.expectedTotalBytes!)
-                                                                        : null,
-                                                                  ),
-                                                                );
-                                                              }
-                                                            },
-                                                            errorBuilder:
-                                                                (BuildContext
-                                                                        context,
-                                                                    Object
-                                                                        error,
-                                                                    StackTrace?
-                                                                        stackTrace) {
-                                                              return const Center(
-                                                                  child: Icon(Icons
-                                                                      .error));
-                                                            },
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 5,
-                                                          ),
-                                                          Padding(
-                                                            padding:
-                                                                const EdgeInsets
-                                                                        .symmetric(
-                                                                    horizontal:
-                                                                        8.0),
-                                                            child: SizedBox(
-                                                              height: 70,
-                                                              width: 130,
-                                                              child: Text(
-                                                                recInfo['name'],
-                                                                softWrap: true,
-                                                                style:
-                                                                    const TextStyle(
-                                                                  fontSize: 12,
+                                              return InkWell(
+                                                  onTap: () => setState(() {
+                                                        (cart.addToCart(
+                                                            recInfo));
+                                                        _recomendCartFuture = cart
+                                                            .setRecomendCart();
+                                                      }),
+                                                  child: Card(
+                                                    margin: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 8.0),
+                                                    child: Column(
+                                                      children: [
+                                                        Image.network(
+                                                          recInfo['image_url'],
+                                                          fit: BoxFit.contain,
+                                                          width: 120,
+                                                          height: 120,
+                                                          loadingBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  Widget child,
+                                                                  ImageChunkEvent?
+                                                                      loadingProgress) {
+                                                            if (loadingProgress ==
+                                                                null) {
+                                                              return child;
+                                                            } else {
+                                                              return Center(
+                                                                child:
+                                                                    CircularProgressIndicator(
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .secondary,
+                                                                  value: loadingProgress
+                                                                              .expectedTotalBytes !=
+                                                                          null
+                                                                      ? loadingProgress
+                                                                              .cumulativeBytesLoaded /
+                                                                          (loadingProgress
+                                                                              .expectedTotalBytes!)
+                                                                      : null,
+                                                                ),
+                                                              );
+                                                            }
+                                                          },
+                                                          errorBuilder:
+                                                              (BuildContext
+                                                                      context,
+                                                                  Object error,
+                                                                  StackTrace?
+                                                                      stackTrace) {
+                                                            return const Center(
+                                                                child: Icon(Icons
+                                                                    .error));
+                                                          },
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 5,
+                                                        ),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets
+                                                                  .symmetric(
+                                                                  horizontal:
+                                                                      8.0),
+                                                          child: SizedBox(
+                                                            height: 70,
+                                                            width: 130,
+                                                            child: Text(
+                                                              recInfo['name'],
+                                                              softWrap: true,
+                                                              maxLines: 3,
+                                                              style: TextStyle(
+                                                                  fontSize: 14,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .bold,
-                                                                ),
-                                                              ),
+                                                                  color: Theme.of(
+                                                                          context)
+                                                                      .colorScheme
+                                                                      .onPrimary),
                                                             ),
                                                           ),
-                                                          const SizedBox(
-                                                            height: 1,
-                                                          ),
-                                                          Text(
-                                                            '${recInfo['price'].toString()} руб.',
-                                                            style: TextStyle(
-                                                                color: Theme.of(
-                                                                        context)
-                                                                    .colorScheme
-                                                                    .secondary),
-                                                          ),
-                                                          const SizedBox(
-                                                            height: 1,
-                                                          ),
-                                                          Text(
-                                                              '${recInfo['store_name']}'),
-                                                        ],
-                                                      ),
-                                                    ));
-                                              }
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 1,
+                                                        ),
+                                                        Text(
+                                                          '${recInfo['price'].toString()} руб.',
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .secondary),
+                                                        ),
+                                                        const SizedBox(
+                                                          height: 1,
+                                                        ),
+                                                        Text(
+                                                          '${recInfo['store_name']}',
+                                                          style: TextStyle(
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .colorScheme
+                                                                  .onPrimary),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ));
                                             },
                                           ),
                                         );
@@ -503,7 +554,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                         )),
               const SizedBox(height: 5),
               Card(
-                color: Theme.of(context).colorScheme.background,
+                color: Theme.of(context).colorScheme.surface,
                 margin: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(

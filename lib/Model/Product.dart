@@ -192,37 +192,20 @@ class Cart extends ChangeNotifier {
   // }
 
   Future<List> setRecomendCart() async {
-    List listRec = cartList;
-    bool clusters = true;
-    bool cartIsEmpty = false;
-    recCart = {};
-    recomendCart = [];
-    if (listRec.length > 1) {
-      recCart['products'] = listRec;
-    } else if (listRec.isEmpty) {
-      cartIsEmpty = true;
-    } else {
-      recCart = listRec[0];
-      clusters = false;
-    }
-    if (!cartIsEmpty) {
-      listRec = await api.postRecomendedCart(recCart);
-      if (listRec.isEmpty) {
-        print('Ошибка Кластеризации');
-        return [];
-      } else {
-        if (clusters) {
-          recomendCart = listRec;
-        } else {
-          recomendCart = listRec;
-        }
-        notifyListeners();
-
-        return recomendCart;
-      }
-    } else {
+    // Всегда передаём данные в формате: {'products': cartList}
+    recCart = {'products': cartList};
+    if (cartList.isEmpty) {
       return [];
     }
+    final listRec = await api.postRecomendedCart(recCart);
+    if (listRec.isEmpty) {
+      print('Ошибка кластеризации');
+      return [];
+    }
+
+    recomendCart = listRec;
+    notifyListeners();
+    return recomendCart;
   }
 
   void addToCart(Map<String, dynamic> mapList, [bool inActiveCart = false]) {

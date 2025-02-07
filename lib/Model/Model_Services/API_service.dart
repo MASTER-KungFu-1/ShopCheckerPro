@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:shopcheckerpro/Model/Product.dart';
+import 'package:shopchecker/Model/Product.dart';
 
 class ApiService {
   final String baseUrl = 'http://185.117.154.91:8000';

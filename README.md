@@ -1,4 +1,4 @@
-# shopcheckerpro
+# shopchecker
 
 A new Flutter project.
 

@@ -45,8 +45,6 @@ class _ShopState extends ConsumerState<Shop> {
 
   Widget buildGrid(int crossAxisCount, double itemHeightFactor) {
     final viewModel = ref.watch(shopViewModelProvider);
-    final cartModel = ref.watch(cartModelProvider);
-    final cartList = cartModel.cartList;
     if (viewModel.filteredProducts.isEmpty) {
       return const Center(
         child: Text('Ничего не найдено'),
@@ -69,7 +67,6 @@ class _ShopState extends ConsumerState<Shop> {
 
           return AnimatedProductCard(
             product: product,
-            cartList: cartList,
             productMap: productMap,
             itemHeightFactor: itemHeightFactor,
             onTap: () {
@@ -97,6 +94,7 @@ class _ShopState extends ConsumerState<Shop> {
   @override
   Widget build(BuildContext context) {
     final viewModel = ref.watch(shopViewModelProvider);
+
     return GestureDetector(
       onTap: () => viewModel.handleTapOutside(context),
       child: SafeArea(
@@ -223,21 +221,19 @@ class _ShopState extends ConsumerState<Shop> {
 
 class AnimatedProductCard extends StatefulWidget {
   final Product product;
-  final List<Map<String, dynamic>> cartList;
   final Map<String, dynamic> productMap;
   final double itemHeightFactor;
   final VoidCallback onTap;
   final VoidCallback onDoubleTap;
 
   const AnimatedProductCard({
-    Key? key,
+    super.key,
     required this.product,
-    required this.cartList,
     required this.productMap,
     required this.itemHeightFactor,
     required this.onTap,
     required this.onDoubleTap,
-  }) : super(key: key);
+  });
 
   @override
   _AnimatedProductCardState createState() => _AnimatedProductCardState();
@@ -247,7 +243,6 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _scaleAnimation;
-
   int tapCount = 0;
 
   @override
@@ -257,14 +252,9 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     );
-
     _scaleAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
     );
-
-    _animationController.addListener(() {
-      setState(() {});
-    });
   }
 
   @override
@@ -277,31 +267,18 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
     setState(() {
       tapCount++;
     });
-
+    // Запускаем анимацию увеличения, затем возвращаем в исходное состояние
     _animationController.forward().then((_) {
       _animationController.reverse();
     });
     widget.onTap();
   }
 
-  void _handleDoubleTap() {
-    setState(() {
-      if (tapCount > 0) {
-        tapCount--;
-      }
-    });
-
-    _animationController.forward().then((_) {
-      _animationController.reverse();
-    });
-    widget.onDoubleTap();
-  }
-
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _handleTap,
-      onDoubleTap: _handleDoubleTap,
+      onDoubleTap: widget.onDoubleTap,
       child: Transform.scale(
         scale: _scaleAnimation.value,
         child: Stack(
@@ -403,19 +380,19 @@ class _AnimatedProductCardState extends State<AnimatedProductCard>
                 ],
               ),
             ),
-            if (tapCount != 0)
-              Positioned(
-                top: 12,
-                right: 12,
-                child: CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Theme.of(context).colorScheme.secondary,
-                  child: Text(
-                    '$tapCount',
-                    style: const TextStyle(fontSize: 10, color: Colors.white),
-                  ),
+            // Кружок-счётчик в верхнем правом углу карточки
+            Positioned(
+              top: 8,
+              right: 8,
+              child: CircleAvatar(
+                radius: 12,
+                backgroundColor: Colors.red,
+                child: Text(
+                  '$tapCount',
+                  style: const TextStyle(fontSize: 10, color: Colors.white),
                 ),
               ),
+            ),
           ],
         ),
       ),

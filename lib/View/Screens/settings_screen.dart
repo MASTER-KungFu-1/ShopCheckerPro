@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:math';
-import 'package:shopcheckerpro/Model/Achivements.dart';
-//import 'package:shopcheckerpro/ViewModel/Settings_ViewModel.dart';
+
+import 'package:shopchecker/ViewModel/settings_ViewModel.dart';
 
 class Settings extends ConsumerStatefulWidget {
   const Settings({super.key});
@@ -20,15 +19,6 @@ class _SettingsState extends ConsumerState<Settings> {
 
   @override
   Widget build(BuildContext context) {
-    Achivements achivements_init = Achivements();
-    //List<Map> achivements = achivements_init.getAchivements();
-
-    List<Map> doneAchivements = achivements_init.getDoneAchivements();
-    //List<String> achivements = ["321", "fsdkjhfjksghfshjkf", "0hshfskfhskjfh"];
-
-    int countShowachivements = 2;
-    final rand = Random();
-    bool activeThemeLight = false;
     return SafeArea(
         child: Scaffold(
       appBar: AppBar(
@@ -50,21 +40,10 @@ class _SettingsState extends ConsumerState<Settings> {
                       color: Theme.of(context).colorScheme.secondary),
                 ),
               ),
-              doneAchivements.isNotEmpty
-                  ? ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: countShowachivements,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(doneAchivements[
-                              rand.nextInt(doneAchivements.length)]['title']),
-                        );
-                      },
-                    )
-                  : const Text(
-                      'Вы еще не успели получить достижение!',
-                      style: TextStyle(fontSize: 16),
-                    ),
+              const Text(
+                'Вы еще не успели получить достижение!',
+                style: TextStyle(fontSize: 16),
+              ),
               const SizedBox(
                 height: 40,
               ),
@@ -75,28 +54,13 @@ class _SettingsState extends ConsumerState<Settings> {
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.secondary),
               ),
-              Row(
-                children: [
-                  const Text("Включить светлую тему"),
-                  Checkbox(
-                      value: activeThemeLight,
-                      onChanged: (value) {
-                        // if (value == false) {
-                        //   ref
-                        //       .read(settingsProvider.notifier)
-                        //       .updateTheme("dark");
-                        // } else {
-                        //   ref
-                        //       .read(settingsProvider.notifier)
-                        //       .updateTheme("light");
-                        // }
-
-                        setState(() {
-                          activeThemeLight = value!;
-                        });
-                      }),
-                ],
-              ),
+              Checkbox(
+                  value: ref.watch(settingsProvider).activeThemeCheckBox,
+                  onChanged: (value) {
+                    ref
+                        .read(settingsProvider.notifier)
+                        .updateTheme(value! ? 'light' : 'dark');
+                  }),
             ],
           ),
         ),
