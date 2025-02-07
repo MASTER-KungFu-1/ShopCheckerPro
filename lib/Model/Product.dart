@@ -172,44 +172,47 @@ class Cart extends ChangeNotifier {
   List recomendCart = [];
   Map<String, dynamic> recCart = {};
   ApiService api = ApiService();
-  Future<List> setRecomendCart() async {
-    List listRec = cartList;
-    bool clusters = true;
-    bool cartIsEmpty = false;
-    recCart = {};
-    recomendCart = [];
-    if (listRec.length > 1) {
-      recCart['products'] = listRec;
-    } else if (listRec.isEmpty) {
-      cartIsEmpty = true;
-    } else {
-      recCart = listRec[0];
-      clusters = false;
-    }
-    if (!cartIsEmpty) {
-      listRec = await api.postRecomendedCart(recCart);
-      if (listRec.isEmpty) {
-        print('Ошибка Кластеризации');
-        return [];
-      } else {
-        if (clusters) {
-          recomendCart = listRec;
-        } else {
-          recomendCart = listRec;
-        }
-        notifyListeners();
 
-        return recomendCart;
-      }
-    } else {
+  // Future<List> addIntoRecomendCart(index) async {
+  //   if (recomendCart.isEmpty) {
+  //     return [];
+  //   } else {
+  //     List listRec = recomendCart;
+  //     Map<String, dynamic> recCart = cartList[index];
+  //     try {
+  //       listRec.add(await api.postRecomendedCart(recCart));
+  //       recomendCart = listRec;
+  //     } catch (e) {
+  //       print(e.toString());
+  //       listRec.add([]);
+  //     }
+
+  //     return listRec;
+  //   }
+  // }
+
+  Future<List> setRecomendCart() async {
+    // Всегда передаём данные в формате: {'products': cartList}
+    recCart = {'products': cartList};
+    if (cartList.isEmpty) {
       return [];
     }
+    final listRec = await api.postRecomendedCart(recCart);
+    if (listRec.isEmpty) {
+      print('Ошибка кластеризации');
+      return [];
+    }
+
+    recomendCart = listRec;
+    notifyListeners();
+    return recomendCart;
   }
 
-  void addToCart(Map<String, dynamic> mapList) {
+  void addToCart(Map<String, dynamic> mapList, [bool inActiveCart = false]) {
     bool add = true;
+
     for (int i = 0; i < cartList.length; i++) {
-      if (mapList == cartList[i]) {
+      if (mapList['name'] == cartList[i]['name']) {
         if (cartList[i].containsKey('count')) {
           cartList[i]['count'] = cartList[i]['count'] + 1;
         } else {

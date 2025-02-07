@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shopcheckerpro/Model/Model_Services/API_service.dart';
-import 'package:shopcheckerpro/Model/Product.dart';
+import 'package:shopchecker/Model/Model_Services/API_service.dart';
+import 'package:shopchecker/Model/Product.dart';
 
 class ShopViewModel extends ChangeNotifier {
   final ApiService apiService = ApiService();
@@ -9,6 +9,7 @@ class ShopViewModel extends ChangeNotifier {
   final List<FocusNode> buttonFocusNodes = [];
   List<Product> filteredProducts = [];
   List<Product> products = [];
+
   bool isLoading = false;
   String errorMessage = '';
   Map<String, bool> data = {

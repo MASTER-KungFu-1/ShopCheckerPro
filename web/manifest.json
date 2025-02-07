@@ -1,6 +1,6 @@
 {
-    "name": "shopcheckerpro",
-    "short_name": "shopcheckerpro",
+    "name": "shopchecker",
+    "short_name": "shopchecker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
