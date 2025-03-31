@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'View/Screens/cart_screen.dart';
 import 'View/Screens/settings_screen.dart';
 import 'ViewModel/settings_ViewModel.dart';
+import 'View/Screens/shopList_screen.dart';
 
 void main() async {
   runApp(const ProviderScope(child: MyApp()));
@@ -44,6 +45,7 @@ class MyApp extends ConsumerWidget {
         '/': (context) => const Shop(),
         '/cart': (context) => const CartPage(),
         '/settings': (context) => const Settings(),
+        '/shopList': (context) => const ShoplistScreen(),
       },
     );
   }

@@ -31,36 +31,33 @@ class _SettingsState extends ConsumerState<Settings> {
         Card(
           child: Column(
             children: [
-              Center(
-                child: Text(
-                  'Достижения',
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.secondary),
+              // Text(
+              //   'Настройки',
+              //   style: TextStyle(
+              //       fontSize: 20,
+              //       fontWeight: FontWeight.bold,
+              //       color: Theme.of(context).colorScheme.secondary),
+              // ),
+              Row(children: [
+                Expanded(
+                  flex: 3,
+                  child: Text(" Сменить тему",
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.secondary)),
                 ),
-              ),
-              const Text(
-                'Вы еще не успели получить достижение!',
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Text(
-                'Настройки',
-                style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(context).colorScheme.secondary),
-              ),
-              Checkbox(
-                  value: ref.watch(settingsProvider).activeThemeCheckBox,
-                  onChanged: (value) {
-                    ref
-                        .read(settingsProvider.notifier)
-                        .updateTheme(value! ? 'light' : 'dark');
-                  }),
+                Expanded(
+                  flex: 1,
+                  child: Checkbox(
+                      fillColor: WidgetStatePropertyAll(
+                          Theme.of(context).colorScheme.secondary),
+                      value: ref.watch(settingsProvider).activeThemeCheckBox,
+                      onChanged: (value) {
+                        ref
+                            .read(settingsProvider.notifier)
+                            .updateTheme(value! ? 'light' : 'dark');
+                      }),
+                )
+              ]),
             ],
           ),
         ),

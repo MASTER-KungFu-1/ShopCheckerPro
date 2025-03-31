@@ -96,7 +96,8 @@ class _CartPageState extends ConsumerState<CartPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: Center(child: const Text('Корзина')),
+          centerTitle: true,
+          title: const Text('Корзина'),
         ),
         bottomNavigationBar: BottomNavigationBar(
           onTap: (int index) {
@@ -264,7 +265,7 @@ class _CartPageState extends ConsumerState<CartPage> {
                                             const SizedBox(height: 4),
                                             if (product.containsKey('count'))
                                               Text(
-                                                'Колличество: ${product['count'].toString()} шт ',
+                                                'Количество: ${product['count'].toString()} шт ',
                                                 style: TextStyle(
                                                     fontSize: 14,
                                                     color: Theme.of(context)
@@ -548,30 +549,36 @@ class _CartPageState extends ConsumerState<CartPage> {
                         )
                       : const Center(
                           child: Text(
-                            'Вы еще не добавили ничего в корзину!\nНажмите по товару один раз, чтобы добавить его в корзину.\nДвойное нажатие удаляет товар из корзины.',
+                            'Вы еще не добавили ничего в корзину!\n\nНажмите по товару один раз, чтобы добавить его в корзину.\n\nДвойное нажатие удаляет товар из корзины.\n\nЧтобы открыть список покупок нажмите на блок снизу. (С общей ценой и скидками)',
                             textAlign: TextAlign.center,
                           ),
                         )),
               const SizedBox(height: 5),
-              Card(
-                color: Theme.of(context).colorScheme.surface,
-                margin: const EdgeInsets.symmetric(vertical: 8.0),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 3.0, horizontal: 16.0),
-                  child: SizedBox(
-                    width: MediaQuery.of(context).size.width - 16,
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Товары ($totalItems)'),
-                          const SizedBox(height: 8),
-                          Text(
-                              'Общая цена: ${totalPrice.toStringAsFixed(2)} руб.'),
-                          const SizedBox(height: 8),
-                          Text('Скидка: ${discount.toStringAsFixed(2)} руб.'),
-                        ],
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, '/shopList');
+                },
+                child: Card(
+                  color: Theme.of(context).colorScheme.surface,
+                  margin: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 3.0, horizontal: 16.0),
+                    child: SizedBox(
+                      width: MediaQuery.of(context).size.width - 16,
+                      child: Center(
+                        //onTap: () => Navigator.pushNamed(context, '/shopList'),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Text('Товары ($totalItems)'),
+                            const SizedBox(height: 8),
+                            Text(
+                                'Общая цена: ${totalPrice.toStringAsFixed(2)} руб.'),
+                            const SizedBox(height: 8),
+                            Text('Скидка: ${discount.toStringAsFixed(2)} руб.'),
+                          ],
+                        ),
                       ),
                     ),
                   ),
