@@ -25,6 +25,8 @@
 | ![Список акций](https://github.com/user-attachments/assets/b2ad32ec-eca8-4ef0-975a-45aa8c367250) | ![Карточка товара](https://github.com/user-attachments/assets/1d4752f2-1a70-47d8-904c-d2bf17dd71e2) |
 
 ## 📦 Установка
+https://drive.google.com/drive/folders/1R2uXndNWU6OhXgcdhBwJ3PSwxeNnpdZu?usp=sharing
+||
 ```bash
 git clone https://github.com/MASTER-KungFu-1/ShopCheckerPro.git
 cd ShopCheckerPro
