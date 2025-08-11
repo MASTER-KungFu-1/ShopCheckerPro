@@ -26,7 +26,7 @@
 
 ## 📦 Установка
 <p align="center">
-  <a href="https://github.com/MASTER-KungFu-1/ShopCheckerPro/releases/download/v1.0.25/ShopCheckerPro.apk">
+  <a href="[https://github.com/MASTER-KungFu-1/ShopCheckerPro/releases/download/v1.0.25/ShopCheckerPro.apk](https://github.com/MASTER-KungFu-1/ShopCheckerPro/releases/download/Realese/ShopCheckerPRO.apk)">
     <img src="https://img.shields.io/badge/📥 Скачать%20APK-2ea44f?style=for-the-badge" alt="Скачать APK">
   </a>
 </p>
