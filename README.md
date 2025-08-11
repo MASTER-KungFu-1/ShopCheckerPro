@@ -24,6 +24,12 @@
 |--------------|-----------------|
 | ![Список акций](https://github.com/user-attachments/assets/b2ad32ec-eca8-4ef0-975a-45aa8c367250) | ![Карточка товара](https://github.com/user-attachments/assets/1d4752f2-1a70-47d8-904c-d2bf17dd71e2) |
 
+## 📦 Установка
+<p align="center">
+  <a href="https://github.com/MASTER-KungFu-1/ShopCheckerPro/releases/download/v1.0.25/ShopCheckerPro.apk">
+    <img src="https://img.shields.io/badge/📥 Скачать%20APK-2ea44f?style=for-the-badge" alt="Скачать APK">
+  </a>
+</p>
 
 ```bash
 git clone https://github.com/MASTER-KungFu-1/ShopCheckerPro.git
